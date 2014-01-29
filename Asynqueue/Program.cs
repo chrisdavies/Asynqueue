@@ -10,10 +10,32 @@
         [STAThread]
         public static void Main()
         {
-            DemoPerfQueryQueues();
+            DemoAsyncSend();
 
             Console.WriteLine("Press any key to exit");
             Console.ReadKey();
+        }
+
+        /// <summary>
+        /// Demonstrate that send is really async.
+        /// </summary>
+        private static void DemoAsyncSend()
+        {
+            var queue = new Messenger<int>();
+            var processor = new Task(async () =>
+            {
+                while (true)
+                {
+                    var i = await queue.Receive();
+                    await Task.Delay(1000);
+                    Console.WriteLine("Got " + i);
+                }
+            });
+
+            processor.Start();
+
+            queue.Send(1);
+            Console.WriteLine("All sent and stuff...");
         }
 
         /// <summary>

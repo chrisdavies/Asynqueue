@@ -19,6 +19,7 @@
 
         public void Respond(TOut response)
         {
+            // Bad form to lock on self, but I don't care.
             lock (this)
             {
                 this.response = response;
@@ -38,6 +39,7 @@
 
         public void OnCompleted(Action continuation)
         {
+            // See previous comment about bad form...
             lock (this)
             {
                 this.continuation = continuation;
