@@ -51,3 +51,4 @@ In future versions, we may implement supervisor functionality to attempt to reco
 - Move more console tests to unit test proj
 - Nuget
 - Github pages
+- Promo

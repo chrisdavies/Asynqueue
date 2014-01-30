@@ -5,6 +5,11 @@
     using System.Threading;
     using System.Threading.Tasks;
 
+    /// <summary>
+    /// Just a handful of tests that are too tricky to do properly as
+    /// unit tests, but still matter. (Testing concurrency actually 
+    /// works as expected, perf tests, etc).
+    /// </summary>
     public static class Program
     {
         [STAThread]
@@ -12,7 +17,7 @@
         {
             while (true)
             {
-                DemoPerfQueryQueues();
+                TestSingleActor();
                 Console.WriteLine("Press the 'x' key to exit");
                 if (Console.ReadKey().KeyChar == 'x') break;
             }
