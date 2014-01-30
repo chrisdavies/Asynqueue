@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>Asynqueue</id>
+        <version>0.0.2</version>
+        <authors>Chris Davies</authors>
+        <projectUrl>https://github.com/chrisdavies/Asynqueue</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>A light-weight mechanism for passing messages to actors running in Tasks.</description>
+        <summary />
+        <tags>Actor, Concurrency</tags>
+        <dependencies />
+    </metadata>
+    <files>
+        <file src="Asynqueue\bin\Release\Asynqueue.dll" target="lib\net45\Asynqueue.dll" />
+        <file src="Asynqueue\bin\Release\Asynqueue.pdb" target="lib\net45\Asynqueue.pdb" />
+    </files>
+</package>
