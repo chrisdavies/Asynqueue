@@ -12,7 +12,7 @@
         {
             while (true)
             {
-                DemoPerfQueryQueues();
+                DemoAsyncSend();
                 Console.WriteLine("Press the 'x' key to exit");
                 if (Console.ReadKey().KeyChar == 'x') break;
             }
@@ -20,16 +20,15 @@
 
         private static async Task DemoException()
         {
-            var queue = new QueriableAsynqueue<int, string>()
-                .Actor(i =>
+            var queue = new QueriableAsynqueue<int, string>(i =>
+            {
+                if (i > 10)
                 {
-                    if (i > 10)
-                    {
-                        return "Good to go";
-                    }
+                    return "Good to go";
+                }
 
-                    throw new IndexOutOfRangeException("Needs to be greater than 10");
-                });
+                throw new IndexOutOfRangeException("Needs to be greater than 10");
+            });
 
             try
             {
@@ -46,16 +45,18 @@
         /// <summary>
         /// Demonstrate that send is really async.
         /// </summary>
-        private static void DemoAsyncSend()
+        private static async void DemoAsyncSend()
         {
-            var queue = new Asynqueue<int>()
-                .Actor(async i => {
-                    await Task.Delay(1000);
-                    Console.WriteLine("Got " + i);
-                });
+            var queue = new QueriableAsynqueue<int, string>(async i => {
+                await Task.Delay(1000);
+                Console.WriteLine("Returning...");
+                return "Got " + i;
+            });
 
-            queue.Send(1);
+            var result = queue.Query(1);
             Console.WriteLine("All sent and stuff...");
+            var str = await result;
+            Console.WriteLine(str);
         }
 
         /// <summary>
@@ -65,18 +66,10 @@
         {
             const int NumMessages = 1000000;
             var done = new TaskCompletionSource<int>();
-            var qout = new Asynqueue<string>();
-            var qin = new Asynqueue<int>()
-                .Actor(i => qout.Send("Msg " + i));
-            var w = Stopwatch.StartNew();
-
-            for (var x = 0; x < NumMessages; ++x)
-            {
-                qin.Send(x);
-            }
-
             var count = 0;
-            qout.Actor(_ =>
+            Stopwatch w = Stopwatch.StartNew();
+
+            var qout = new Asynqueue<string>(_ =>
             {
                 if (++count >= NumMessages)
                 {
@@ -84,6 +77,15 @@
                     done.SetResult(1);
                 }
             });
+            
+            var qin = new Asynqueue<int>(i => qout.Send("Msg " + i));
+
+            w = Stopwatch.StartNew();
+
+            for (var x = 0; x < NumMessages; ++x)
+            {
+                qin.Send(x);
+            }
 
             await done.Task;
         }
@@ -93,8 +95,7 @@
         /// </summary>
         private static async Task DemoPerfQueryQueues()
         {
-            var queue = new QueriableAsynqueue<int, string>()
-                .Actor(i => "Hey " + i);
+            var queue = new QueriableAsynqueue<int, string>(i => "Hey " + i);
 
             var w = Stopwatch.StartNew();
 
@@ -111,8 +112,7 @@
         /// </summary>
         private static void DemoMultithreadedness()
         {
-            var queue = new QueriableAsynqueue<int, string>()
-                .Actor(i => "Hey " + i);
+            var queue = new QueriableAsynqueue<int, string>(i => "Hey " + i);
 
             // Create 10 threads (more or less, depending on the ThreadPool)
             // and have each of them send queries to the queue

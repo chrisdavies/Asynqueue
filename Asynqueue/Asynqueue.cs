@@ -10,33 +10,19 @@
         private AsynqueueAwaitable<T> notifier;
         private Task processor;
 
-        public Asynqueue()
+        public Asynqueue(Action<T> actor)
         {
             q = new Queue<T>();
             notifier = new AsynqueueAwaitable<T>(this);
-        }
 
-        public Asynqueue<T> Actor(Action<T> actor)
-        {
-            Sync(() =>
+            this.processor = Task.Run(async () =>
             {
-                if (this.processor != null)
+                while (true)
                 {
-                    throw new InvalidOperationException("Only one actor can be associated with a queue.");
+                    var request = await Receive();
+                    actor(request);
                 }
-
-                this.processor = new Task(async () =>
-                {
-                    while (true)
-                    {
-                        var request = await Receive();
-                        actor(request);
-                    }
-                });
             });
-
-            this.processor.Start();
-            return this;
         }
 
         public void Send(T message)

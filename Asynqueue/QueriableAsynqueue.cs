@@ -5,18 +5,17 @@
 
     public class QueriableAsynqueue<TIn, TOut> : Asynqueue<AsyncQuery<TIn, TOut>>, IDisposable
     {
-        public QueriableAsynqueue<TIn, TOut> Actor(Func<TIn, TOut> actorfn)
+        public QueriableAsynqueue(Func<TIn, TOut> actorfn)
+            : base(TryActorFn(req => req.Respond(actorfn(req.Input))))
         {
-            return ActorFn(req => req.Respond(actorfn(req.Input)));
         }
 
-        public QueriableAsynqueue<TIn, TOut> Actor(Func<TIn, Task<TOut>> actorfn)
+        public QueriableAsynqueue(Func<TIn, Task<TOut>> actorfn)
+            : base(TryActorFn(async req => {
+                var response = await actorfn(req.Input);
+                req.Respond(response);
+            }))
         {
-            return ActorFn(async req =>
-            {
-                var result = await actorfn(req.Input);
-                req.Respond(result);
-            });
         }
 
         public AsyncQuery<TIn, TOut> Query(TIn input)
@@ -31,9 +30,9 @@
             base.Dispose();
         }
 
-        private QueriableAsynqueue<TIn, TOut> ActorFn(Action<AsyncQuery<TIn, TOut>> fn)
+        private static Action<AsyncQuery<TIn, TOut>> TryActorFn(Action<AsyncQuery<TIn, TOut>> fn)
         {
-            base.Actor(req =>
+            return (req =>
             {
                 try
                 {
@@ -44,8 +43,6 @@
                     req.Respond(ex);
                 }
             });
-
-            return this;
         }
     }
 }
