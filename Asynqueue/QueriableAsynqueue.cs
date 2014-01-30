@@ -5,9 +5,6 @@
 
     public class QueriableAsynqueue<TIn, TOut> : Asynqueue<AsyncQuery<TIn, TOut>>, IDisposable
     {
-        private Task processor;
-        private Func<TIn, Task<TOut>> actorfn;
-
         public QueriableAsynqueue<TIn, TOut> Actor(Func<TIn, TOut> actorfn)
         {
             return ActorFn(req => req.Respond(actorfn(req.Input)));
@@ -29,13 +26,9 @@
             return query;
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
-            if (this.processor != null)
-            {
-                this.processor.Dispose();
-                this.processor = null;
-            }
+            base.Dispose();
         }
 
         private QueriableAsynqueue<TIn, TOut> ActorFn(Action<AsyncQuery<TIn, TOut>> fn)
