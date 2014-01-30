@@ -48,7 +48,6 @@ When using QueriableAsynqueue, exceptions that occur in the actor will be thrown
 In future versions, we may implement supervisor functionality to attempt to recover from unhandled errors in actors.
 
 # To do
-- Move more console tests to unit test proj
 - Nuget
 - Github pages
 - Promo
