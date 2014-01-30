@@ -12,9 +12,39 @@
         {
             while (true)
             {
-                DemoPerfQueryQueues();
+                DemoMultithreadedness();
                 Console.WriteLine("Press the 'x' key to exit");
                 if (Console.ReadKey().KeyChar == 'x') break;
+            }
+        }
+
+        private static async Task TestSingleActor()
+        {
+            Console.WriteLine("Single actor");
+            var count = 0;
+            var q = new Asynqueue<int>(i =>
+            {
+                if (Interlocked.Increment(ref count) > 1)
+                {
+                    Console.WriteLine("Count > 1");
+                }
+
+                Thread.Sleep(250);
+                Interlocked.Decrement(ref count);
+                Console.WriteLine("ActorDone");
+            });
+
+            for (var i = 0; i < 5; ++i)
+            {
+                ThreadPool.QueueUserWorkItem(_ =>
+                {
+                    for (var x = 0; x < 5000; ++x)
+                    {
+                        q.Send(x);
+                    }
+
+                    Console.WriteLine("Done");
+                });
             }
         }
 
@@ -23,6 +53,7 @@
         /// </summary>
         private static async Task DemoPerfPlainQueues()
         {
+            Console.WriteLine("Plain queues");
             const int NumMessages = 1000000;
             var done = new TaskCompletionSource<int>();
             var count = 0;
@@ -54,6 +85,7 @@
         /// </summary>
         private static async Task DemoPerfQueryQueues()
         {
+            Console.WriteLine("Query queues");
             var queue = new QueriableAsynqueue<int, string>(i => "Hey " + i);
 
             var w = Stopwatch.StartNew();
@@ -71,6 +103,7 @@
         /// </summary>
         private static void DemoMultithreadedness()
         {
+            Console.WriteLine("Multi-threaded");
             var queue = new QueriableAsynqueue<int, string>(i => "Hey " + i);
 
             // Create 10 threads (more or less, depending on the ThreadPool)
