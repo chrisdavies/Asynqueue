@@ -3,17 +3,17 @@
     using System;
     using System.Threading.Tasks;
 
-    public class QueriableMessenger<TIn, TOut> : Asynqueue<AsyncQuery<TIn, TOut>>, IDisposable
+    public class QueriableAsynqueue<TIn, TOut> : Asynqueue<AsyncQuery<TIn, TOut>>, IDisposable
     {
         private Task processor;
         private Func<TIn, Task<TOut>> actorfn;
 
-        public QueriableMessenger<TIn, TOut> Actor(Func<TIn, TOut> actorfn)
+        public QueriableAsynqueue<TIn, TOut> Actor(Func<TIn, TOut> actorfn)
         {
             return ActorFn(req => req.Respond(actorfn(req.Input)));
         }
 
-        public QueriableMessenger<TIn, TOut> Actor(Func<TIn, Task<TOut>> actorfn)
+        public QueriableAsynqueue<TIn, TOut> Actor(Func<TIn, Task<TOut>> actorfn)
         {
             return ActorFn(async req =>
             {
@@ -38,7 +38,7 @@
             }
         }
 
-        private QueriableMessenger<TIn, TOut> ActorFn(Action<AsyncQuery<TIn, TOut>> fn)
+        private QueriableAsynqueue<TIn, TOut> ActorFn(Action<AsyncQuery<TIn, TOut>> fn)
         {
             base.Actor(req =>
             {

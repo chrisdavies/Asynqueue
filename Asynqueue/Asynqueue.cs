@@ -7,13 +7,13 @@
     public class Asynqueue<T> : IDisposable
     {
         private Queue<T> q;
-        private MessengerAwaitable<T> notifier;
+        private AsynqueueAwaitable<T> notifier;
         private Task processor;
 
         public Asynqueue()
         {
             q = new Queue<T>();
-            notifier = new MessengerAwaitable<T>(this);
+            notifier = new AsynqueueAwaitable<T>(this);
         }
 
         public Asynqueue<T> Actor(Action<T> actor)
@@ -48,12 +48,12 @@
             }
         }
 
-        public MessengerAwaitable<T> Receive()
+        protected IAwaitable<T> Receive()
         {
             return notifier;
         }
 
-        public T Get()
+        internal T Get()
         {
             lock (q)
             {
@@ -61,7 +61,7 @@
             }
         }
 
-        public void Sync(Action fn)
+        internal protected void Sync(Action fn)
         {
             lock (q)
             {

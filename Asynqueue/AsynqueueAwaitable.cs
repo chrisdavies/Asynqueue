@@ -3,7 +3,7 @@
     using System;
     using System.Runtime.CompilerServices;
 
-    public class MessengerAwaitable<T> : INotifyCompletion
+    internal class AsynqueueAwaitable<T> : IAwaitable<T>
     {
         private Action continuation;
         private Asynqueue<T> getter;
@@ -11,12 +11,12 @@
 
         public bool IsCompleted { get { return cnt > 0; } }
 
-        public MessengerAwaitable(Asynqueue<T> getter)
+        public AsynqueueAwaitable(Asynqueue<T> getter)
         {
             this.getter = getter;
         }
 
-        public MessengerAwaitable<T> GetAwaiter()
+        public IAwaitable<T> GetAwaiter()
         {
             return this;
         }
@@ -57,5 +57,4 @@
             return val;
         }
     }
-
 }

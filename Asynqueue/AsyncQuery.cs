@@ -3,7 +3,7 @@
     using System;
     using System.Runtime.CompilerServices;
 
-    public class AsyncQuery<TIn, TOut> : INotifyCompletion
+    public class AsyncQuery<TIn, TOut> : IAwaitable<TOut>
     {
         private TOut response;
         private Exception exception;
@@ -28,7 +28,7 @@
             Respond(() => this.response = response);
         }
 
-        public AsyncQuery<TIn, TOut> GetAwaiter()
+        public IAwaitable<TOut> GetAwaiter()
         {
             return this;
         }

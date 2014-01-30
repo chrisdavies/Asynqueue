@@ -21,7 +21,7 @@
 
         private static async Task DemoException()
         {
-            var queue = new QueriableMessenger<int, string>()
+            var queue = new QueriableAsynqueue<int, string>()
                 .Actor(i =>
                 {
                     if (i > 10)
@@ -64,19 +64,29 @@
         /// </summary>
         private static async Task DemoPerfPlainQueues()
         {
+            const int NumMessages = 1000000;
+            var done = new TaskCompletionSource<int>();
             var qout = new Asynqueue<string>();
             var qin = new Asynqueue<int>()
                 .Actor(i => qout.Send("Msg " + i));
-
             var w = Stopwatch.StartNew();
-                        
-            for (var x = 1; x < 1000000; ++x)
+
+            for (var x = 0; x < NumMessages; ++x)
             {
                 qin.Send(x);
-                var a = await qout.Receive();
             }
 
-            Console.WriteLine("Done in " + w.ElapsedMilliseconds + "ms");
+            var count = 0;
+            qout.Actor(_ =>
+            {
+                if (++count >= NumMessages)
+                {
+                    Console.WriteLine("Done in " + w.ElapsedMilliseconds + "ms");
+                    done.SetResult(1);
+                }
+            });
+
+            await done.Task;
         }
 
         /// <summary>
@@ -84,7 +94,7 @@
         /// </summary>
         private static async Task DemoPerfQueryQueues()
         {
-            var queue = new QueriableMessenger<int, string>()
+            var queue = new QueriableAsynqueue<int, string>()
                 .Actor(i => "Hey " + i);
 
             var w = Stopwatch.StartNew();
@@ -102,7 +112,7 @@
         /// </summary>
         private static void DemoMultithreadedness()
         {
-            var queue = new QueriableMessenger<int, string>()
+            var queue = new QueriableAsynqueue<int, string>()
                 .Actor(i => "Hey " + i);
 
             // Create 10 threads (more or less, depending on the ThreadPool)
