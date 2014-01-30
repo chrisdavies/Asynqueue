@@ -5,7 +5,11 @@ This is simply a prototype/demo of a mechanism for passing messages between task
 ## Performance
 This performs quite nicely on my laptop (an i7 2.4Ghz). It is capable of processing 1 million messages (and responses) in 650ms.
 
-Performance degrates significantly while in debug mode in VS. I'm not sure why, but I don't really care, as performance only matters when I'm not running in the IDE, anyway.
+As a comparison, the same implementation using DataFlow is 100k messages in 1400ms. Or using Stact 10k in 4000ms.
+
+To be fair to DataFlow and Stact, these are much more robust solutions.
+
+Anyway, performance degrades significantly (orders of magnitude) while in debug mode in VS. I'm not sure why, but I don't really care, as performance only matters when I'm not running in the IDE, anyway.
 
 ## Messenger
 The messenger class is used to send messages to an actor. Any number of processes can send messages to a messenger, but only one process should ever own (receive on) any given messenger.
