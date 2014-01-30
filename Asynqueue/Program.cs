@@ -10,10 +10,35 @@
         [STAThread]
         public static void Main()
         {
-            DemoAsyncSend();
+            DemoException();
 
             Console.WriteLine("Press any key to exit");
             Console.ReadKey();
+        }
+
+        private static async Task DemoException()
+        {
+            var queue = new QueriableMessenger<int, string>()
+                .Actor(i => 
+                {
+                    if (i > 10)
+                    {
+                        return "Good to go";
+                    }
+
+                    throw new IndexOutOfRangeException("Needs to be greater than 10");
+                });
+
+            try
+            {
+                var result = await queue.Query(1232);
+                Console.WriteLine(result);
+                result = await queue.Query(9);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERR: " + ex.Message);
+            }
         }
 
         /// <summary>
@@ -61,7 +86,7 @@
 
             var w = Stopwatch.StartNew();
                         
-            for (var x = 1; x < 100000; ++x)
+            for (var x = 1; x < 1000000; ++x)
             {
                 qin.Send(x);
                 var a = await qout.Receive();
@@ -75,22 +100,12 @@
         /// </summary>
         private static async Task DemoPerfQueryQueues()
         {
-            var queue = new QueriableMessenger<int, string>();
-
-            var processor = new Task(async () =>
-            {
-                while (true)
-                {
-                    var i = await queue.Receive();
-                    i.Respond("Hey " + i.Input);
-                }
-            });
-
-            processor.Start();
+            var queue = new QueriableMessenger<int, string>()
+                .Actor(i => "Hey " + i);
 
             var w = Stopwatch.StartNew();
 
-            for (var x = 1; x < 100000; ++x)
+            for (var x = 1; x < 1000000; ++x)
             {
                 await queue.Query(x);
             }
@@ -103,20 +118,8 @@
         /// </summary>
         private static void DemoMultithreadedness()
         {
-            var queue = new QueriableMessenger<int, string>();
-
-            // Create an actor task that will read from the queue
-            // and send some processed response.
-            var actor = new Task(async () =>
-            {
-                while (true)
-                {
-                    var request = await queue.Receive();
-                    request.Respond("Hey " + request.Input);
-                }
-            });
-
-            actor.Start();
+            var queue = new QueriableMessenger<int, string>()
+                .Actor(i => "Hey " + i);
 
             // Create 10 threads (more or less, depending on the ThreadPool)
             // and have each of them send queries to the queue
@@ -133,7 +136,7 @@
                         if (x % 100000 == 0)
                         {
                             Console.WriteLine("T" + originalId + " is now " + Thread.CurrentThread.ManagedThreadId);
-                            await Task.Yield();
+                            await Task.Delay(1);
                         }
                     }
 

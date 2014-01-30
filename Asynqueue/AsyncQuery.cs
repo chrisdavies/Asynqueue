@@ -6,6 +6,7 @@
     public class AsyncQuery<TIn, TOut> : INotifyCompletion
     {
         private TOut response;
+        private Exception exception;
         private Action continuation;
 
         public bool IsCompleted { get; set; }
@@ -17,19 +18,14 @@
             this.Input = input;
         }
 
+        public void Respond(Exception ex)
+        {
+            Respond(() => this.exception = ex);
+        }
+
         public void Respond(TOut response)
         {
-            // Bad form to lock on self, but I don't care.
-            lock (this)
-            {
-                this.response = response;
-                this.IsCompleted = true;
-
-                if (this.continuation != null)
-                {
-                    this.continuation();
-                }
-            }
+            Respond(() => this.response = response);
         }
 
         public AsyncQuery<TIn, TOut> GetAwaiter()
@@ -39,7 +35,7 @@
 
         public void OnCompleted(Action continuation)
         {
-            // See previous comment about bad form...
+            // Locking on self. Don't care if it's bad form.
             lock (this)
             {
                 this.continuation = continuation;
@@ -52,7 +48,23 @@
 
         public TOut GetResult()
         {
+            if (exception != null) throw exception;
+
             return response;
+        }
+
+        private void Respond(Action fn)
+        {
+            lock (this)
+            {
+                fn();
+                this.IsCompleted = true;
+
+                if (this.continuation != null)
+                {
+                    this.continuation();
+                }
+            }
         }
     }
 }
