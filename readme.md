@@ -11,66 +11,42 @@ To be fair to DataFlow and Stact, these are much more robust solutions.
 
 Anyway, performance degrades significantly (orders of magnitude) while in debug mode in VS. I'm not sure why, but I don't really care, as performance only matters when I'm not running in the IDE, anyway.
 
-## Messenger
-The messenger class is used to send messages to an actor. Any number of processes can send messages to a messenger, but only one process should ever own (receive on) any given messenger.
+## Asynqueue
+The Asynqueue class is used to send messages to an actor. Any number of processes can send messages to an asynqueue, but only one process can ever own (receive on) any given asynqueue.
 
-So, let's define a messenger that receives a WelcomeEmail message type.
+So, let's define an asynqueue that receives a WelcomeEmail message type.
 
-    var emailQueue = new Messenger<WelcomeEmail>();
+    var emailQueue = new Asynqueue<WelcomeEmail>(async emailMessage => {
+        await EmailSys.Send(email);
+    });
 
-To send welcome emails to this queue, we would simply do this:
+This receives email messages and then sends them asynchronously using the fictional EmailSys class. To send welcome emails to this queue, we would simply do this:
 
     emailQueue.Send(new WelcomeEmail { Subject = "Welcome!" });
 
-OK, I didn't specify any email addresses, etc, but that's not the point.
+OK, I didn't specify any email addresses, etc, but that's not the point. The anonymous function (async emailMessage => { ... }) is really an actor, spawned into a .NET Task which is efficiently managed by the queue.
 
-Now, here's an actor that will receive welcome email messages from our queue, and do something with them.
+## QueriableAsynqueue
+OK, that's great. But what if we want to get the results of the actor's work? Well, the actor could publish results to another instance of Asynqueue, but that would be cumbersome, plus only one actor could read from the result queue.
 
-    var actor = new Task(async () =>
-    {
-        while (true)
-        {
-            var email = await emailQueue.Receive();
-            await EmailSys.Send(email);
-        }
+This is where QueriableAsynqueue comes in. It allows you to send messages to an actor, and then process the response. Here's an example.
+
+    var userQuery = new QueriableAsynqueue<string, User>(async name => {
+        var result = await Users.GetByNameAsync(name);
+        return result;
     });
-
-    actor.Start();
-
-## QueriableMessenger
-OK, that's great. But what if we want to get the results of the actor's work? Well, the actor could publish results to another instance of Messenger, but that would be cumbersome, plus only one process could read from the result messenger.
-
-This is where QueriableMessenger comes in. It allows you to send messages to an actor, and then process the response. Here's an example.
-
-    var userQuery = new QueriableMessenger<string, User>();
 
 This queue will send strings (usernames, in our example) to an actor, and will receive User objects in return.
 
-Our actor might look like this:
-
-    var actor = new Task(async () =>
-    {
-        while (true)
-        {
-            var request = await userQuery.Receive();
-            var username = request.Input;
-            var response = await GetUser(username);
-            request.Respond(response);
-        }
-    });
-
-    actor.Start();
-
-OK, here we call a fictional function GetUser, which makes an async call to the database, and returns a User object, or more likely Task<User>.
-
-We might call this actor like this:
+We might send and receive like this:
 
     var user = await userQuery.Query("cdavies");
 
 ## Error handling
-When using QueriableMessengers, exceptions that occur in the actor will be thrown in the process that handles the actor's response. When using the normal Messenger, unhandled exceptions in the actor are unhandled by the system.
+When using QueriableAsynqueue, exceptions that occur in the actor will be thrown in the process that handles the actor's response. When using the normal Asynqueue, unhandled exceptions in the actor are unhandled by the system.
 
 In future versions, we may implement supervisor functionality to attempt to recover from unhandled errors in actors.
 
 # To do
 - Nuget
+- Github pages
