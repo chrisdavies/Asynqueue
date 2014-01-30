@@ -3,7 +3,7 @@
 This is simply a prototype/demo of a mechanism for passing messages between tasks in .NET. It is a naive, but fast actor model implementation.
 
 ## Performance
-This performs quite nicely on my laptop (an i7 2.4Ghz). It is capable of processing 1 million messages (and responses) in 650ms.
+This performs quite nicely on my laptop (an i7 2.4Ghz). It is capable of processing 1 million messages (and responses) in 675ms.
 
 As a comparison, the same implementation using DataFlow is 100k messages in 1400ms. Or using Stact 10k in 4000ms.
 
@@ -68,4 +68,6 @@ We might call this actor like this:
     var user = await userQuery.Query("cdavies");
 
 ## Error handling
-I haven't considered error handling in this system. What happens when an actor gets an exception, and how does it send this exeption to the caller? Dunno. If I decide to pursue this project further, this is probably the next thing I'll look into.
+When using QueriableMessengers, exceptions that occur in the actor will be thrown in the process that handles the actor's response. When using the normal Messenger, unhandled exceptions in the actor are unhandled by the system.
+
+In future versions, we may implement supervisor functionality to attempt to recover from unhandled errors in actors.

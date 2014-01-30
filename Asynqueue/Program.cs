@@ -10,9 +10,13 @@
         [STAThread]
         public static void Main()
         {
-            DemoPerfQueryQueues();
-            Console.WriteLine("Press any key to exit");
-            Console.ReadKey();
+            while (true)
+            {
+                DemoPerfQueryQueues();
+                Console.WriteLine("Press the 'x' key to exit");
+                if (Console.ReadKey().KeyChar == 'x') break;
+            }
+            
         }
 
         private static async Task DemoException()
