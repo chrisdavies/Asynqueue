@@ -3,7 +3,7 @@
 This is simply a prototype/demo of a mechanism for passing messages between tasks in .NET. It is a naive, but fast actor model implementation.
 
 ## Performance
-This performs quite nicely on my laptop (an i7 2.4Ghz). It is capable of processing 1 million messages (and responses) in 675ms.
+This performs quite nicely on my laptop (an i7 2.4Ghz). It is capable of processing 1 million messages (and responses) in 575ms.
 
 As a comparison, the same implementation using DataFlow is 100k messages in 1400ms. Or using Stact 10k in 4000ms.
 
@@ -48,5 +48,6 @@ When using QueriableAsynqueue, exceptions that occur in the actor will be thrown
 In future versions, we may implement supervisor functionality to attempt to recover from unhandled errors in actors.
 
 # To do
+- Move more console tests to unit test proj
 - Nuget
 - Github pages

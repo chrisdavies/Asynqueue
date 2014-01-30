@@ -12,7 +12,7 @@
         {
             while (true)
             {
-                DemoMultithreadedness();
+                DemoPerfQueryQueues();
                 Console.WriteLine("Press the 'x' key to exit");
                 if (Console.ReadKey().KeyChar == 'x') break;
             }
