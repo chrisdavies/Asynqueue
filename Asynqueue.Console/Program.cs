@@ -16,7 +16,6 @@
                 Console.WriteLine("Press the 'x' key to exit");
                 if (Console.ReadKey().KeyChar == 'x') break;
             }
-            
         }
 
         private static async Task DemoException()
