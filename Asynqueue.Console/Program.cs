@@ -12,51 +12,10 @@
         {
             while (true)
             {
-                DemoAsyncSend();
+                DemoPerfQueryQueues();
                 Console.WriteLine("Press the 'x' key to exit");
                 if (Console.ReadKey().KeyChar == 'x') break;
             }
-        }
-
-        private static async Task DemoException()
-        {
-            var queue = new QueriableAsynqueue<int, string>(i =>
-            {
-                if (i > 10)
-                {
-                    return "Good to go";
-                }
-
-                throw new IndexOutOfRangeException("Needs to be greater than 10");
-            });
-
-            try
-            {
-                var result = await queue.Query(1232);
-                Console.WriteLine(result);
-                result = await queue.Query(9);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("ERR: " + ex.Message);
-            }
-        }
-
-        /// <summary>
-        /// Demonstrate that send is really async.
-        /// </summary>
-        private static async void DemoAsyncSend()
-        {
-            var queue = new QueriableAsynqueue<int, string>(async i => {
-                await Task.Delay(1000);
-                Console.WriteLine("Returning...");
-                return "Got " + i;
-            });
-
-            var result = queue.Query(1);
-            Console.WriteLine("All sent and stuff...");
-            var str = await result;
-            Console.WriteLine(str);
         }
 
         /// <summary>

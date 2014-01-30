@@ -47,11 +47,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="QueriableAsynqueueTests.cs" />
     <Compile Include="AsynqueueTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Asynqueue\Asynqueue.csproj">
+      <Project>{3dd3dc6c-4c2d-4f5a-b4fe-45602c75dfe1}</Project>
+      <Name>Asynqueue</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
