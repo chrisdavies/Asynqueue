@@ -73,10 +73,4 @@ When using QueriableMessengers, exceptions that occur in the actor will be throw
 In future versions, we may implement supervisor functionality to attempt to recover from unhandled errors in actors.
 
 # To do
-x Move into a nice, reusable library
-x Make things private/internal that should be
-- Unit tests
-- Test lock vs alternatives
-- Test perf w/classes vs lambdas
 - Nuget
-- Update readme
