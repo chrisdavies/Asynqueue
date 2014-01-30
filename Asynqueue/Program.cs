@@ -10,8 +10,7 @@
         [STAThread]
         public static void Main()
         {
-            DemoException();
-
+            DemoPerfQueryQueues();
             Console.WriteLine("Press any key to exit");
             Console.ReadKey();
         }
@@ -19,7 +18,7 @@
         private static async Task DemoException()
         {
             var queue = new QueriableMessenger<int, string>()
-                .Actor(i => 
+                .Actor(i =>
                 {
                     if (i > 10)
                     {
@@ -46,18 +45,11 @@
         /// </summary>
         private static void DemoAsyncSend()
         {
-            var queue = new Messenger<int>();
-            var processor = new Task(async () =>
-            {
-                while (true)
-                {
-                    var i = await queue.Receive();
+            var queue = new Messenger<int>()
+                .Actor(async i => {
                     await Task.Delay(1000);
                     Console.WriteLine("Got " + i);
-                }
-            });
-
-            processor.Start();
+                });
 
             queue.Send(1);
             Console.WriteLine("All sent and stuff...");
@@ -68,21 +60,9 @@
         /// </summary>
         private static async Task DemoPerfPlainQueues()
         {
-            var qin = new Messenger<int>();
             var qout = new Messenger<string>();
-
-            var processor = new Task(async () =>
-            {
-                var x = 0;
-                while (true)
-                {
-                    var i = await qin.Receive();
-                    --x;
-                    qout.Send((x).ToString());
-                }
-            });
-
-            processor.Start();
+            var qin = new Messenger<int>()
+                .Actor(i => qout.Send("Msg " + i));
 
             var w = Stopwatch.StartNew();
                         

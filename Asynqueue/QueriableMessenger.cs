@@ -6,41 +6,20 @@
     public class QueriableMessenger<TIn, TOut> : Messenger<AsyncQuery<TIn, TOut>>, IDisposable
     {
         private Task processor;
+        private Func<TIn, Task<TOut>> actorfn;
 
-        public QueriableMessenger<TIn, TOut> Actor(Func<TIn, TOut> actor)
+        public QueriableMessenger<TIn, TOut> Actor(Func<TIn, TOut> actorfn)
         {
-            return this.Actor(i => Task.FromResult(actor(i)));
+            return ActorFn(req => req.Respond(actorfn(req.Input)));
         }
 
-        public QueriableMessenger<TIn, TOut> Actor(Func<TIn, Task<TOut>> actor)
+        public QueriableMessenger<TIn, TOut> Actor(Func<TIn, Task<TOut>> actorfn)
         {
-            Sync(() =>
+            return ActorFn(async req =>
             {
-                if (this.processor != null)
-                {
-                    throw new InvalidOperationException("Only one actor can be associated with a queue.");
-                }
-
-                this.processor = new Task(async () =>
-                {
-                    while (true)
-                    {
-                        var request = await Receive();
-                        try
-                        {
-                            var response = await actor(request.Input);
-                            request.Respond(response);
-                        }
-                        catch (Exception ex)
-                        {
-                            request.Respond(ex);
-                        }
-                    }
-                });
+                var result = await actorfn(req.Input);
+                req.Respond(result);
             });
-
-            this.processor.Start();
-            return this;
         }
 
         public AsyncQuery<TIn, TOut> Query(TIn input)
@@ -57,6 +36,23 @@
                 this.processor.Dispose();
                 this.processor = null;
             }
+        }
+
+        private QueriableMessenger<TIn, TOut> ActorFn(Action<AsyncQuery<TIn, TOut>> fn)
+        {
+            base.Actor(req =>
+            {
+                try
+                {
+                    fn(req);
+                }
+                catch (Exception ex)
+                {
+                    req.Respond(ex);
+                }
+            });
+
+            return this;
         }
     }
 }
