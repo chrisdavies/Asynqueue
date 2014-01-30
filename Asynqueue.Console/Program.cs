@@ -1,4 +1,4 @@
-﻿namespace Asynqueue
+﻿namespace Asynqueue.Console
 {
     using System;
     using System.Diagnostics;
@@ -49,7 +49,7 @@
         /// </summary>
         private static void DemoAsyncSend()
         {
-            var queue = new Messenger<int>()
+            var queue = new Asynqueue<int>()
                 .Actor(async i => {
                     await Task.Delay(1000);
                     Console.WriteLine("Got " + i);
@@ -64,8 +64,8 @@
         /// </summary>
         private static async Task DemoPerfPlainQueues()
         {
-            var qout = new Messenger<string>();
-            var qin = new Messenger<int>()
+            var qout = new Asynqueue<string>();
+            var qin = new Asynqueue<int>()
                 .Actor(i => qout.Send("Msg " + i));
 
             var w = Stopwatch.StartNew();

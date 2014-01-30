@@ -76,3 +76,4 @@ In future versions, we may implement supervisor functionality to attempt to reco
 - Move into a nice, reusable library
 - Make things private/internal that should be
 - Nuget
+- Test perf w/classes rather than lambdas

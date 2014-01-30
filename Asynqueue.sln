@@ -3,7 +3,18 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Express 2013 for Web
 VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Asynqueue", "Asynqueue\Asynqueue.csproj", "{ADDEB190-2ED2-4141-A63C-BB797C5325D3}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{8D6B967B-B53B-4FEC-B15A-DA01BF5BC92B}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Asynqueue", "Asynqueue\Asynqueue.csproj", "{3DD3DC6C-4C2D-4F5A-B4FE-45602C75DFE1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Asynqueue.Console", "Asynqueue.Console\Asynqueue.Console.csproj", "{ADDEB190-2ED2-4141-A63C-BB797C5325D3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Asynqueue.Tests", "Asynqueue.Tests\Asynqueue.Tests.csproj", "{46123FB3-794C-41C6-A88E-C4B097400298}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +22,18 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3DD3DC6C-4C2D-4F5A-B4FE-45602C75DFE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DD3DC6C-4C2D-4F5A-B4FE-45602C75DFE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DD3DC6C-4C2D-4F5A-B4FE-45602C75DFE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DD3DC6C-4C2D-4F5A-B4FE-45602C75DFE1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{ADDEB190-2ED2-4141-A63C-BB797C5325D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{ADDEB190-2ED2-4141-A63C-BB797C5325D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ADDEB190-2ED2-4141-A63C-BB797C5325D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ADDEB190-2ED2-4141-A63C-BB797C5325D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46123FB3-794C-41C6-A88E-C4B097400298}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46123FB3-794C-41C6-A88E-C4B097400298}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46123FB3-794C-41C6-A88E-C4B097400298}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46123FB3-794C-41C6-A88E-C4B097400298}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

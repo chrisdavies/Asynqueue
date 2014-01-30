@@ -4,19 +4,19 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
-    public class Messenger<T> : IDisposable
+    public class Asynqueue<T> : IDisposable
     {
         private Queue<T> q;
         private MessengerAwaitable<T> notifier;
         private Task processor;
 
-        public Messenger()
+        public Asynqueue()
         {
             q = new Queue<T>();
             notifier = new MessengerAwaitable<T>(this);
         }
 
-        public Messenger<T> Actor(Action<T> actor)
+        public Asynqueue<T> Actor(Action<T> actor)
         {
             Sync(() =>
             {

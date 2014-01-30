@@ -6,12 +6,12 @@
     public class MessengerAwaitable<T> : INotifyCompletion
     {
         private Action continuation;
-        private Messenger<T> getter;
+        private Asynqueue<T> getter;
         private int cnt;
 
         public bool IsCompleted { get { return cnt > 0; } }
 
-        public MessengerAwaitable(Messenger<T> getter)
+        public MessengerAwaitable(Asynqueue<T> getter)
         {
             this.getter = getter;
         }

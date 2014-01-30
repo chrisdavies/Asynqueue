@@ -3,7 +3,7 @@
     using System;
     using System.Threading.Tasks;
 
-    public class QueriableMessenger<TIn, TOut> : Messenger<AsyncQuery<TIn, TOut>>, IDisposable
+    public class QueriableMessenger<TIn, TOut> : Asynqueue<AsyncQuery<TIn, TOut>>, IDisposable
     {
         private Task processor;
         private Func<TIn, Task<TOut>> actorfn;
