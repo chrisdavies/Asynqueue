@@ -50,7 +50,3 @@ We might send and receive like this:
 When using QueriableAsynqueue, exceptions that occur in the actor will be thrown in the process that handles the actor's response. When using the normal Asynqueue, unhandled exceptions in the actor are unhandled by the system.
 
 In future versions, we may implement supervisor functionality to attempt to recover from unhandled errors in actors.
-
-# To do
-- Github pages
-- Promo
