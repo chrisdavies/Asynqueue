@@ -57,9 +57,7 @@ When using QueriableAsynqueue, exceptions that occur in the actor will be thrown
 
 In future versions, we may implement supervisor functionality to attempt to recover from unhandled errors in actors.
 
-## License
-
-MIT License (MIT)
+## MIT License (MIT)
 
 Copyright (c) 2015 Christopher Davies
 
