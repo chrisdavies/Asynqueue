@@ -1,4 +1,4 @@
-# Perf
+# Asynqueue Perf
 
 I kept hearing how fast Go is and how easy it makes concurrency, so I put this project together to see how C# stacked up.
 
