@@ -17,7 +17,7 @@
         {
             while (true)
             {
-                TestSingleActor();
+                DemoPerfPlainQueues();
                 Console.WriteLine("Press the 'x' key to exit");
                 if (Console.ReadKey().KeyChar == 'x') break;
             }
@@ -73,13 +73,9 @@
                 }
             });
             
-            var qin = new Asynqueue<int>(i => qout.Send("Msg " + i));
-
-            w = Stopwatch.StartNew();
-
             for (var x = 0; x < NumMessages; ++x)
             {
-                qin.Send(x);
+                qout.Send("Msg " + x);
             }
 
             await done.Task;
