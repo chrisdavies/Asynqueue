@@ -3,7 +3,13 @@
     using System;
     using System.Runtime.CompilerServices;
 
-    public class AsyncQuery<TIn, TOut> : IAwaitable<TOut>
+    /// <summary>
+    /// Asynquery is a helper class that represents a single query being sent to and
+    /// returned from a background worker.
+    /// </summary>
+    /// <typeparam name="TIn">The type of message being sent to the background worker</typeparam>
+    /// <typeparam name="TOut">The type of response coming from the background worker</typeparam>
+    internal class Asynquery<TIn, TOut> : IAwaitable<TOut>
     {
         private TOut response;
         private Exception exception;
@@ -13,7 +19,7 @@
 
         public TIn Input { get; set; }
 
-        public AsyncQuery(TIn input)
+        public Asynquery(TIn input)
         {
             this.Input = input;
         }

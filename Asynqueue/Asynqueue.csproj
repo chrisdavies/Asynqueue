@@ -43,7 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AsyncQuery.cs" />
+    <Compile Include="Asynquery.cs" />
     <Compile Include="Asynqueue.cs" />
     <Compile Include="IAwaitable.cs" />
     <Compile Include="AsynqueueAwaitable.cs" />
