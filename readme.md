@@ -16,6 +16,8 @@ To be fair to DataFlow and Stact, these are much more robust solutions.
 
 Anyway, performance degrades significantly (orders of magnitude) while in debug mode in VS. I'm not sure why, but I don't really care, as performance only matters when I'm not running in the IDE, anyway.
 
+More detailed perf tests can be [found here](https://github.com/chrisdavies/Asynqueue/blob/master/go/readme.md).
+
 ## Asynqueue
 
 The Asynqueue class is used to send messages to an actor. Any number of processes can send messages to an asynqueue, but only one process can ever own (receive on) any given asynqueue.
