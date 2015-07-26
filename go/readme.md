@@ -16,7 +16,7 @@ This test sends a million messages to a channel and waits for the channel to ack
 1 million messages
 
 C#: 629ms average
-Go: 820ms average
+Go: 811ms average
 
 ## Bi-directional queues/channels
 
@@ -25,5 +25,16 @@ This test sends a message to a channel and waits for acknowledgement before send
 1 million messages
 
 C#: 963ms average
-Go: 1374ms average
+Go: 1402ms average
 
+## Running tests
+
+Build Asynqueue.Console.csproj in Release mode, then run from the terminal like so:
+
+    Asynqueue.Console plain
+    Asynqueue.Console bidirectional
+
+Run the Go tests like so:
+ 
+    go run ./chanperf.go plain
+    go run ./chanperf.go bidirectional
