@@ -18,7 +18,7 @@
                 var result = await q.Query(7);
                 result.ShouldEqual("Hello 7");
             });
-            
+
             task.Wait();
         }
 
@@ -30,10 +30,12 @@
 
             var task = Task.Run(async () =>
             {
-                try {
+                try
+                {
                     var result = await q.Query(7);
                 }
-                catch (Exception ex) {
+                catch (Exception ex)
+                {
                     ex.Message.ShouldEqual("Ruh roh");
                 }
             });

@@ -15,7 +15,7 @@ This test sends a million messages to a channel and waits for the channel to ack
 
 1 million messages
 
-- C#: 629ms average
+- C#: 648ms average
 - Go: 811ms average
 
 ## Bi-directional queues/channels
@@ -24,8 +24,8 @@ This test sends a message to a channel and waits for acknowledgement before send
 
 1 million messages
 
-- C#: 963ms average
-- Go: 1402ms average
+- C#: 776ms average
+- Go: 1381ms average
 
 ## Running tests
 

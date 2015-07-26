@@ -71,7 +71,7 @@
             var done = new TaskCompletionSource<long>();
             var count = 0;
             Stopwatch w = Stopwatch.StartNew();
-
+            
             var qout = new Asynqueue<string>(_ =>
             {
                 if (++count >= NumMessages)
@@ -125,6 +125,7 @@
                     for (var x = 1; x <= 1000000; ++x)
                     {
                         var a = await queue.Query(x);
+
                         if (x % 100000 == 0)
                         {
                             Console.WriteLine("T" + originalId + " is now " + Thread.CurrentThread.ManagedThreadId);
@@ -135,6 +136,8 @@
                     Console.WriteLine("T" + originalId + " stopping, (is now " + Thread.CurrentThread.ManagedThreadId + ")");
                 });
             }
+
+            Console.ReadLine();
         }
     }
 }

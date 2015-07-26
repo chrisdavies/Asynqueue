@@ -3,7 +3,7 @@
     using System;
     using System.Threading.Tasks;
 
-    public class QueriableAsynqueue<TIn, TOut> : Asynqueue<AsyncQuery<TIn, TOut>>, IDisposable
+    public class QueriableAsynqueue<TIn, TOut> : Asynqueue<AsyncQuery<TIn, TOut>>
     {
         public QueriableAsynqueue(Func<TIn, TOut> actorfn)
             : base(TryActorFn(req => req.Respond(actorfn(req.Input))))
@@ -24,12 +24,7 @@
             this.Send(query);
             return query;
         }
-
-        public override void Dispose()
-        {
-            base.Dispose();
-        }
-
+        
         private static Action<AsyncQuery<TIn, TOut>> TryActorFn(Action<AsyncQuery<TIn, TOut>> fn)
         {
             return (req =>

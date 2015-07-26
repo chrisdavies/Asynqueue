@@ -1,22 +1,33 @@
 ﻿namespace Asynqueue
 {
     using System;
-    using System.Runtime.CompilerServices;
+    using System.Collections.Generic;
     using System.Threading;
-    using System.Threading.Tasks;
 
-    internal class AsynqueueAwaitable<T> : IAwaitable<T>
+    public class AsynqueueAwaitable<T> : IAwaitable<T>
     {
         private Action continuation;
-        private Asynqueue<T> getter;
-        private int cnt;
-        private int processingCount;
+        private volatile int count = 0;
+        private volatile int runCount = 0;
+        private Queue<T> q = new Queue<T>();
 
-        public bool IsCompleted { get { return cnt > 0; } }
-
-        public AsynqueueAwaitable(Asynqueue<T> getter)
+        public bool IsCompleted
         {
-            this.getter = getter;
+            get
+            {
+                return count > 0;
+            }
+        }
+
+        public void Enqueue(T message)
+        {
+            lock (q)
+            {
+                Interlocked.Increment(ref count);
+                q.Enqueue(message);
+            }
+
+            Execute();
         }
 
         public IAwaitable<T> GetAwaiter()
@@ -24,55 +35,32 @@
             return this;
         }
 
-        public void Set()
+        public T GetResult()
         {
-            Action call = null;
-            getter.Sync(() =>
+            lock (q)
             {
-                ++cnt;
-                call = this.continuation;
-            });
-
-            Process(call);
-        }
-
-        private void Process(Action call)
-        {
-            if (call != null && Interlocked.CompareExchange(ref processingCount, 1, 0) == 0)
-            {
-                Task.Run(() =>
-                {
-                    this.continuation();
-                    Interlocked.Exchange(ref processingCount, 0);
-                });
+                Interlocked.Decrement(ref count);
+                return q.Dequeue();
             }
         }
 
         public void OnCompleted(Action continuation)
         {
-            Action call = null;
-            getter.Sync(() =>
-            {
-                this.continuation = continuation;
-                if (cnt > 0)
-                {
-                    call = continuation;
-                }
-            });
+            this.continuation = continuation;
 
-            Process(call);
+            Execute();
         }
 
-        public T GetResult()
+        private void Execute()
         {
-            T val = default(T);
-            getter.Sync(() =>
-            {
-                --cnt;
-                val = getter.Get();
-            });
+            var call = continuation;
 
-            return val;
+            if (call != null && count > 0 && Interlocked.CompareExchange(ref runCount, 1, 0) == 0)
+            {
+                call();
+                runCount = 0;
+                Execute();
+            }
         }
     }
 }
