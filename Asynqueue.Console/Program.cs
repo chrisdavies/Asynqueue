@@ -13,54 +13,62 @@
     public static class Program
     {
         [STAThread]
-        public static void Main()
+        public static void Main(string[] args)
         {
-            while (true)
+            if (args.Length == 0)
             {
-                DemoPerfPlainQueues();
-                Console.WriteLine("Press the 'x' key to exit");
-                if (Console.ReadKey().KeyChar == 'x') break;
+                PrintHelp();
+            }
+            else
+            {
+                Task.WaitAll(RunCommand(args[0]));
+            }            
+        }
+
+        private static void PrintHelp()
+        {
+            Console.WriteLine("Asynqueue.Console plain");
+            Console.WriteLine("Asynqueue.Console bidirectional");
+        }
+
+        private static async Task RunCommand(string cmd)
+        {
+            switch (cmd.ToLowerInvariant())
+            {
+                case "plain":
+                    await AveragePerf(PlainQueue);
+                    break;
+                case "bidirectional":
+                    await AveragePerf(BidirectionalQueue);
+                    break;
+                default:
+                    PrintHelp();
+                    break;
             }
         }
 
-        private static async Task TestSingleActor()
+        public static async Task AveragePerf(Func<Task<long>> fn)
         {
-            Console.WriteLine("Single actor");
-            var count = 0;
-            var q = new Asynqueue<int>(i =>
+            const int passes = 10;
+            long ms = 0;
+
+            for (var i = 0; i < passes; ++i)
             {
-                if (Interlocked.Increment(ref count) > 1)
-                {
-                    Console.WriteLine("Count > 1");
-                }
-
-                Thread.Sleep(250);
-                Interlocked.Decrement(ref count);
-                Console.WriteLine("ActorDone");
-            });
-
-            for (var i = 0; i < 5; ++i)
-            {
-                ThreadPool.QueueUserWorkItem(_ =>
-                {
-                    for (var x = 0; x < 5000; ++x)
-                    {
-                        q.Send(x);
-                    }
-
-                    Console.WriteLine("Done");
-                });
+                var fnMs = await fn();
+                ms += fnMs;
+                Console.WriteLine(fnMs + "ms");
             }
+
+            Console.WriteLine($"\n {ms / passes}ms avg");
         }
 
         /// <summary>
         /// Demonstrate the performance of the plain messenger.
         /// </summary>
-        private static async Task DemoPerfPlainQueues()
+        private static async Task<long> PlainQueue()
         {
-            Console.WriteLine("Plain queues");
             const int NumMessages = 1000000;
-            var done = new TaskCompletionSource<int>();
+            var done = new TaskCompletionSource<long>();
             var count = 0;
             Stopwatch w = Stopwatch.StartNew();
 
@@ -68,8 +76,7 @@
             {
                 if (++count >= NumMessages)
                 {
-                    Console.WriteLine("Done in " + w.ElapsedMilliseconds + "ms");
-                    done.SetResult(1);
+                    done.SetResult(w.ElapsedMilliseconds);
                 }
             });
             
@@ -78,15 +85,14 @@
                 qout.Send("Msg " + x);
             }
 
-            await done.Task;
+            return await done.Task;
         }
 
         /// <summary>
         /// Demonstrate the performance of the queriable messenger.
         /// </summary>
-        private static async Task DemoPerfQueryQueues()
+        private static async Task<long> BidirectionalQueue()
         {
-            Console.WriteLine("Query queues");
             var queue = new QueriableAsynqueue<int, string>(i => "Hey " + i);
 
             var w = Stopwatch.StartNew();
@@ -96,7 +102,7 @@
                 await queue.Query(x);
             }
 
-            Console.WriteLine("Done in " + w.ElapsedMilliseconds + "ms");
+            return w.ElapsedMilliseconds;
         }
 
         /// <summary>
