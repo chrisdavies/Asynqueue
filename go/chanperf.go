@@ -6,6 +6,7 @@ import (
   "strconv"
   "strings"
   "os"
+  "sync"
 )
 
 func main() {
@@ -22,6 +23,7 @@ func usage() {
   
   fmt.Fprintf(os.Stderr, "%s plain\n", exeName)
   fmt.Fprintf(os.Stderr, "%s bidirectional\n", exeName)
+  fmt.Fprintf(os.Stderr, "%s buff\n", exeName)
   os.Exit(2)
 }
 
@@ -32,6 +34,8 @@ func runCommand(cmd string) {
       averagePerf(plainQueue)
     case "bidirectional":
       averagePerf(bidirectionalQueue)
+    case "buff":
+      averagePerf(buffQueue)
     default:
       usage()
   }
@@ -77,6 +81,32 @@ func plainQueue() int64 {
   }
   
   return <-done
+}
+
+// buffQueue tests single-didrectional buffered channel usage
+func buffQueue() int64 {
+	const numMessages = 1000000
+	
+  var wg = sync.WaitGroup{};
+	var startTime = time.Now()
+	var qout = make(chan string, numMessages)
+
+  wg.Add(numMessages)
+
+	go func() {
+    for {
+      <- qout
+      wg.Done()
+    }
+	}()
+  
+  for i := 0; i < numMessages; i++ {
+    qout <- "Msg " + strconv.Itoa(i)
+  }
+  
+  wg.Wait()
+  
+  return time.Now().Sub(startTime).Nanoseconds() / 1e6
 }
 
 // bidirectionalQueue tests sending to a channel and awaiting a response
