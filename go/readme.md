@@ -2,7 +2,7 @@
 
 I kept hearing how fast Go is and how easy it makes concurrency, so I put this project together to see how C# stacked up.
 
-Turns out C# stacks up pretty well, at least on Windows, given a relatively simple channel implementation that I wrote.
+Not so hot... 
 
 ## Hardware
 
@@ -15,8 +15,10 @@ This test sends a million messages to a channel and waits for the channel to ack
 
 1 million messages
 
-- C#: 648ms average
+- C#: 2341ms average
 - Go: 811ms average
+
+C# is 2.8x slower
 
 ## Bi-directional queues/channels
 
@@ -26,6 +28,17 @@ This test sends a message to a channel and waits for acknowledgement before send
 
 - C#: 776ms average
 - Go: 1381ms average
+
+C# is 1.7x faster. This makes me wonder if my first benchmark could be improved by using this approach
+
+## Buffered queues/channels
+
+1 million messages, 1 million buffer size
+
+- C#: 648ms average
+- Go: 434ms average
+
+Go is 1.4x faster
 
 ## Running tests
 
@@ -38,3 +51,4 @@ Run the Go tests like so:
  
     go run ./chanperf.go plain
     go run ./chanperf.go bidirectional
+    go run ./chanperf.go buff
